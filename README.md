@@ -1,8 +1,39 @@
 # Qwen2.5-3B R1-Zero-style training
 
-This folder implements a small, educational version of the central DeepSeek-R1-Zero training recipe using **Qwen2.5-3B Base**.
+This project implements a small, educational version of the central DeepSeek-R1-Zero training recipe using **Qwen2.5-3B Base**.
 
 It is not the DeepSeek-R1-Zero model and does not reproduce DeepSeek's architecture, private training data, compute scale, or final capability. It demonstrates the algorithmic workflow on one verifiable arithmetic task and one A100 80 GB GPU.
+
+## Brief overview
+
+DeepSeek-R1 is a reasoning-focused language-model family trained to produce
+multi-step solutions before final answers. Its important research idea is that
+reasoning behaviour can be strengthened with reinforcement learning and
+verifiable rewards, rather than requiring every reasoning trace to be written
+by a human.
+
+DeepSeek-R1-Zero is the direct-RL variant: it starts from a pretrained base
+model, samples groups of candidate answers, scores them with rule-based
+rewards, and applies Group Relative Policy Optimization (GRPO). The reward
+differences inside each group provide the advantage signal, so no critic/value
+model is required.
+
+This folder implements that **R1-Zero-style core workflow** with Qwen2.5-3B
+Base and Countdown arithmetic problems:
+
+```text
+Qwen2.5-3B Base
+    -> grouped response generation
+    -> verifiable accuracy and format rewards
+    -> group-relative advantages
+    -> clipped GRPO update with reference-model KL
+    -> R1-Zero-style reasoning policy
+```
+
+It does not implement the complete DeepSeek-R1 production pipeline. The full
+R1 recipe additionally uses cold-start reasoning SFT, multiple RL and
+rejection-sampling/SFT stages, broader alignment data, distributed training,
+and substantially greater compute.
 
 ## Why the Base model matters
 
@@ -228,4 +259,3 @@ The data-loader position is not restored exactly; the policy, optimizer, and glo
 ## What this intentionally does not claim
 
 This code is a compact study implementation. A production-scale reproduction would additionally need distributed inference/training, much larger and more diverse verifiable data, failure recovery, high-throughput rollout engines, stricter evaluation, and extensive hyperparameter experiments.
-# deepseek-R1-Zero-implement
